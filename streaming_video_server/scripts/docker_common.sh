@@ -35,8 +35,9 @@ EOF
     exit 1
   fi
 
-  echo "Docker requires elevated access on this host. Docker commands will run via sudo." >&2
-  DOCKER_PREFIX="sudo"
+  export DOCKER_CONFIG="${DOCKER_CONFIG:-${HOME}/.docker}"
+  echo "Docker requires elevated access on this host. Docker commands will run via sudo with DOCKER_CONFIG=${DOCKER_CONFIG}." >&2
+  DOCKER_PREFIX="sudo --preserve-env=DOCKER_CONFIG"
 }
 
 

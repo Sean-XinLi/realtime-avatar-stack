@@ -24,6 +24,14 @@ rsync -a --delete \
   --exclude ".DS_Store" \
   --exclude "__pycache__" \
   --exclude "*.pyc" \
+  --exclude ".venv" \
+  --exclude "venv" \
+  --exclude ".cache" \
+  --exclude ".pytest_cache" \
+  --exclude ".mypy_cache" \
+  --exclude "build" \
+  --exclude "dist" \
+  --exclude "node_modules" \
   --exclude "models" \
   "${SOURCE_DIR}/" "${TARGET_DIR}/"
 
