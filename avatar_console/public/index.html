@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Avatar Console</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero panel">
+        <p class="eyebrow">avatar_console</p>
+        <h1>文本驱动头像流式播放</h1>
+        <p class="lead">
+          左侧保持与远程视频服务的一条常驻 WebRTC 会话，浏览器会持续发送模拟麦克风的近静音底流；右侧会把 <code>input.txt</code> / <code>output.txt</code> 的内容拆成短句，边写入边生成语音，再持续混到同一条上行流里送给远程模型。
+        </p>
+      </section>
+
+      <section class="workspace">
+        <section class="stage panel">
+          <div class="panelHeader">
+            <div>
+              <p class="eyebrow">Remote Stream</p>
+              <h2>同步音视频回放</h2>
+            </div>
+          </div>
+
+          <div class="videoFrame">
+            <video id="remoteVideo" autoplay playsinline controls></video>
+          </div>
+
+          <div class="controlGrid">
+            <label>
+              <span>远程服务器</span>
+              <input id="serverUrl" type="text" placeholder="http://&lt;server-ip&gt;:18000" />
+            </label>
+            <label>
+              <span>captureMs</span>
+              <input id="captureMs" type="number" value="20" min="10" step="10" />
+            </label>
+            <label>
+              <span>inputChunkMs</span>
+              <input id="inputChunkMs" type="number" value="40" min="20" step="20" />
+            </label>
+            <label>
+              <span>avatarId</span>
+              <select id="avatarId" disabled>
+                <option value="">Default avatar</option>
+              </select>
+            </label>
+            <label>
+              <span>TTS voice</span>
+              <select id="voice"></select>
+            </label>
+            <label>
+              <span>本地上行预览</span>
+              <audio id="localAudio" controls autoplay muted></audio>
+            </label>
+          </div>
+
+          <div class="actions">
+            <button id="prepareBtn">启动常驻会话</button>
+            <button id="stopBtn" disabled>停止会话</button>
+            <button id="disconnectBtn" disabled>断开连接</button>
+          </div>
+
+          <pre id="status" class="status">Idle</pre>
+        </section>
+
+        <section class="chat panel">
+          <div class="panelHeader">
+            <div>
+              <p class="eyebrow">Dialogue</p>
+              <h2>输入文本或问题</h2>
+            </div>
+          </div>
+
+          <section class="speechPanel">
+            <div class="speechPanelHeader">
+              <div>
+                <p class="eyebrow">Voice Input</p>
+                <h3>按住快捷键说话</h3>
+                <p id="speechHint" class="speechHint">
+                  按住 Control 说话，松开后自动完成 STT 并写入 input.txt。如果浏览器不响应 Control，请直接点击按住说话。
+                </p>
+              </div>
+              <label class="speechModeField">
+                <span>语音后动作</span>
+                <select id="speechMode">
+                  <option value="stt_only">仅转写到 input.txt</option>
+                  <option value="direct">转写后直接朗读 input.txt</option>
+                  <option value="reply">转写后回答并朗读 output.txt</option>
+                </select>
+              </label>
+            </div>
+
+            <button id="speechBtn" class="speechBtn" type="button">
+              按住 Control / 点击按住说话
+            </button>
+
+            <div id="speechStatus" class="speechStatus">语音输入待命</div>
+          </section>
+
+          <div id="conversation" class="conversation"></div>
+
+          <label class="composerWrap">
+            <span>消息内容</span>
+            <textarea
+              id="composer"
+              rows="5"
+              placeholder="输入要直接分段朗读的内容，或者输入一个问题让 codex 边写 output.txt 边分段朗读。"
+            ></textarea>
+          </label>
+
+          <div class="actions dual">
+            <button id="directBtn">直接朗读 input.txt</button>
+            <button id="replyBtn">回答后朗读 output.txt</button>
+          </div>
+
+          <div class="files">
+            <article class="fileCard">
+              <p class="eyebrow">Local File</p>
+              <h3>input.txt</h3>
+              <pre id="inputFile"></pre>
+            </article>
+            <article class="fileCard">
+              <p class="eyebrow">Local File</p>
+              <h3>output.txt</h3>
+              <pre id="outputFile"></pre>
+            </article>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

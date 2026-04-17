@@ -1,0 +1,4 @@
+interface:
+  display_name: "Structured Chat Memory"
+  short_description: "Update rolling memory.json for multi-turn chat"
+  default_prompt: "Read structured chat memory input, infer the current topic, rewrite a compact rolling summary, and return strict JSON only."

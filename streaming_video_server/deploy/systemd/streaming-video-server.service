@@ -1,0 +1,15 @@
+[Unit]
+Description=Streaming Video Server
+After=network.target
+
+[Service]
+Type=simple
+User=streaming-video
+WorkingDirectory=%h/streaming_video_project/streaming_video_server
+EnvironmentFile=%h/streaming_video_project/streaming_video_server/.env.server
+ExecStart=%h/streaming_video_project/streaming_video_server/scripts/run_server.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

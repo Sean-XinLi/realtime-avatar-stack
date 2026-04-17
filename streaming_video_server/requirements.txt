@@ -1,0 +1,6 @@
+aiohttp==3.11.18
+aiortc==1.11.0
+av==14.3.0
+numpy==2.2.5
+Pillow==11.2.1
+loguru==0.7.3

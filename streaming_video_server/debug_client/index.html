@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Streaming Avatar Client</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="panel hero">
+        <p class="eyebrow">SoulX FlashHead Streaming</p>
+        <h1>浏览器采集麦克风，远端生成视频，实时回放合成结果</h1>
+        <p class="lead">
+          这个客户端只负责采集本地音频、与远程服务器建立 WebRTC 连接，并播放服务器回传的同步音视频。
+        </p>
+      </section>
+
+      <section class="panel controls">
+        <label>
+          <span>服务器信令地址</span>
+          <input id="serverUrl" type="text" value="" placeholder="http://&lt;server-ip&gt;:18000" />
+        </label>
+        <label>
+          <span>逻辑采集粒度 (ms)</span>
+          <input id="captureMs" type="number" value="20" min="10" step="10" />
+        </label>
+        <label>
+          <span>输入 chunk (ms)</span>
+          <input id="inputChunkMs" type="number" value="40" min="20" step="20" />
+        </label>
+        <label>
+          <span>头像</span>
+          <select id="avatarId" disabled>
+            <option value="">Default avatar</option>
+          </select>
+        </label>
+        <div class="actions">
+          <button id="startBtn">开始会话</button>
+          <button id="stopBtn" disabled>停止会话</button>
+          <button id="disconnectBtn" disabled>断开连接</button>
+        </div>
+        <pre id="status" class="status">Idle</pre>
+      </section>
+
+      <section class="grid">
+        <article class="panel stream">
+          <h2>本地麦克风预览</h2>
+          <audio id="localAudio" controls autoplay muted></audio>
+        </article>
+        <article class="panel stream">
+          <h2>远端实时结果</h2>
+          <video id="remoteVideo" playsinline autoplay controls></video>
+        </article>
+      </section>
+    </main>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

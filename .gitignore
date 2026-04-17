@@ -1,0 +1,16 @@
+.DS_Store
+**/.DS_Store
+**/.pytest_cache/
+.venv/
+**/.venv/
+**/__pycache__/
+**/*.pyc
+**/node_modules/
+
+streaming_video_server/.env.server
+
+avatar_console/input.txt
+avatar_console/output.txt
+avatar_console/memory.json
+avatar_console/generated/*.wav
+avatar_console/generated/*.aiff

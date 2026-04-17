@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ChatMemoryUpdate",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "topic": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "topic",
+    "summary"
+  ]
+}

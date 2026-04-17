@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Browser Bench</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: #11161b;
+        color: #e8edf2;
+        font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      }
+
+      main {
+        width: min(900px, calc(100vw - 32px));
+      }
+
+      pre {
+        padding: 20px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      video {
+        width: min(320px, 60vw);
+        aspect-ratio: 1;
+        border-radius: 16px;
+        background: #000;
+        display: block;
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <video id="remoteVideo" playsinline autoplay muted></video>
+      <pre id="result">Starting browser bench…</pre>
+    </main>
+    <script type="module" src="./bench.js"></script>
+  </body>
+</html>
