@@ -112,6 +112,33 @@ After startup, the default listen address is `http://0.0.0.0:8080`. The health c
 curl http://127.0.0.1:8080/healthz
 ```
 
+## Docker
+
+If you want to run the server from a prebuilt image instead of a local Python environment, use the published GitHub Container Registry image.
+
+Pull the image:
+
+```bash
+docker pull ghcr.io/sean-xinli/streaming-video-server:latest
+```
+
+Run the container:
+
+```bash
+docker run --rm -p 8080:8080 ghcr.io/sean-xinli/streaming-video-server:latest
+```
+
+Then point `avatar_console` to `http://127.0.0.1:8080`.
+
+If you need custom runtime settings, pass environment variables with `-e`, for example:
+
+```bash
+docker run --rm \
+  -p 8080:8080 \
+  -e STREAM_MOCK_INFERENCE=1 \
+  ghcr.io/sean-xinli/streaming-video-server:latest
+```
+
 ## systemd Deployment
 
 The service unit file lives at [`deploy/systemd/streaming-video-server.service`](./deploy/systemd/streaming-video-server.service).
