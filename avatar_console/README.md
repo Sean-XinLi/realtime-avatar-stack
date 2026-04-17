@@ -2,6 +2,8 @@
 
 A local web console that uses text to drive a `streaming_video_server` instance and play back synchronized audio and video.
 
+Before starting the console, make sure `streaming_video_server` is already running, either from local Python or from the published Docker image. For server startup and real-model setup, see [../streaming_video_server/README.md](../streaming_video_server/README.md) and [../streaming_video_server/streaming-video-server-model-setup.pdf](../streaming_video_server/streaming-video-server-model-setup.pdf).
+
 ## Features
 
 - Writes input text to `input.txt`, splits it into short sentences locally, generates TTS audio per segment, and continuously sends those segments to the remote video service over browser WebRTC.
@@ -25,12 +27,16 @@ A local web console that uses text to drive a `streaming_video_server` instance 
 
 ## Run
 
+No build step is required for the current version.
+
 ```bash
 cd avatar_console
 npm start
 ```
 
 By default the app listens on `http://127.0.0.1:3010`, and the page initially pre-fills the stream server as `http://127.0.0.1:8080`.
+
+If the server is running on the same machine, keep `http://127.0.0.1:8080`. If it is running on another host, enter that host's reachable HTTP address in the page before starting the session.
 
 Optional environment variables:
 
@@ -45,6 +51,7 @@ The current version also accepts the legacy `CONTROL_AVATAR_*` prefix for smooth
 
 ## Requirements
 
+- Node.js with permission to start the local HTTP server
 - macOS built-in `say` and `afconvert`
 - a working `codex exec`
 - a reachable `streaming_video_server`

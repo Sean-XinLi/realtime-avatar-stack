@@ -53,7 +53,7 @@ class DevToolsClient:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run the browser first-frame benchmark via headless Chrome")
-    parser.add_argument("--server-url", default="http://127.0.0.1:18000")
+    parser.add_argument("--server-url", default="http://127.0.0.1:8080")
     parser.add_argument("--chrome-path", default="google-chrome")
     parser.add_argument("--capture-ms", type=int, default=20)
     parser.add_argument("--input-chunk-ms", type=int, default=40)
@@ -113,7 +113,7 @@ async def run_once(args: argparse.Namespace, run_index: int) -> dict[str, object
             raise RuntimeError("no page target available in DevTools")
 
         bench_url = (
-            f"{args.server_url.rstrip('/')}/debug-client/bench.html?"
+            f"{args.server_url.rstrip('/')}/debug_client/bench.html?"
             + urllib.parse.urlencode(
                 {
                     "serverUrl": args.server_url.rstrip("/"),

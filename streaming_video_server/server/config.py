@@ -4,15 +4,74 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_SOULX_ROOT = PROJECT_ROOT.parent / "SoulX-FlashHead"
-DEFAULT_SOULX_CKPT_DIR = DEFAULT_SOULX_ROOT / "models" / "SoulX-FlashHead-1_3B"
-DEFAULT_SOULX_WAV2VEC_DIR = DEFAULT_SOULX_ROOT / "models" / "wav2vec2-base-960h"
-DEFAULT_COND_IMAGE = PROJECT_ROOT / "assets" / "avatars"
-
 
 def _split_csv(raw: str) -> tuple[str, ...]:
     return tuple(part.strip() for part in raw.split(",") if part.strip())
+
+
+def _first_existing_path(candidates: tuple[Path, ...], fallback: Path) -> Path:
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return fallback
+
+
+def _resolve_default_paths(repo_root: Path | None = None) -> dict[str, Path]:
+    resolved_repo_root = repo_root or Path(__file__).resolve().parents[1]
+    vendor_soulx_root = resolved_repo_root / "vendor" / "SoulX-FlashHead"
+    container_soulx_root = Path("/opt/soulx")
+
+    soulx_root = _first_existing_path(
+        (
+            vendor_soulx_root,
+            container_soulx_root,
+        ),
+        fallback=vendor_soulx_root,
+    )
+
+    repo_models_root = resolved_repo_root / "models"
+    container_models_root = Path("/models")
+    models_root = _first_existing_path(
+        (
+            repo_models_root,
+            container_models_root,
+            soulx_root / "models",
+        ),
+        fallback=container_models_root,
+    )
+
+    avatars_root = resolved_repo_root / "assets" / "avatars"
+    return {
+        "repo_root": resolved_repo_root,
+        "soulx_root": soulx_root,
+        "ckpt_dir": _first_existing_path(
+            (
+                repo_models_root / "SoulX-FlashHead-1_3B",
+                container_models_root / "SoulX-FlashHead-1_3B",
+                soulx_root / "models" / "SoulX-FlashHead-1_3B",
+            ),
+            fallback=models_root / "SoulX-FlashHead-1_3B",
+        ),
+        "wav2vec_dir": _first_existing_path(
+            (
+                repo_models_root / "wav2vec2-base-960h",
+                container_models_root / "wav2vec2-base-960h",
+                soulx_root / "models" / "wav2vec2-base-960h",
+            ),
+            fallback=models_root / "wav2vec2-base-960h",
+        ),
+        "cond_image": _first_existing_path(
+            (
+                avatars_root,
+                container_soulx_root / "examples" / "girl.png",
+                soulx_root / "examples" / "girl.png",
+            ),
+            fallback=avatars_root,
+        ),
+    }
+
+
+DEFAULT_PATHS = _resolve_default_paths()
 
 
 @dataclass(slots=True)
@@ -32,10 +91,10 @@ class ServerConfig:
     startup_partial_ratio: float = 0.75
     startup_min_audio_floor_ms: int = 640
     model_type: str = "lite"
-    soulx_root: Path = DEFAULT_SOULX_ROOT
-    ckpt_dir: Path = DEFAULT_SOULX_CKPT_DIR
-    wav2vec_dir: Path = DEFAULT_SOULX_WAV2VEC_DIR
-    cond_image: Path = DEFAULT_COND_IMAGE
+    soulx_root: Path = DEFAULT_PATHS["soulx_root"]
+    ckpt_dir: Path = DEFAULT_PATHS["ckpt_dir"]
+    wav2vec_dir: Path = DEFAULT_PATHS["wav2vec_dir"]
+    cond_image: Path = DEFAULT_PATHS["cond_image"]
     use_face_crop: bool = False
     base_seed: int = 42
     public_origin: str = "*"
@@ -72,10 +131,10 @@ class ServerConfig:
                 int(os.getenv("STREAM_STARTUP_MIN_AUDIO_FLOOR_MS", "640")),
             ),
             model_type=os.getenv("STREAM_MODEL_TYPE", "lite"),
-            soulx_root=Path(os.getenv("SOULX_ROOT", str(DEFAULT_SOULX_ROOT))),
-            ckpt_dir=Path(os.getenv("SOULX_CKPT_DIR", str(DEFAULT_SOULX_CKPT_DIR))),
-            wav2vec_dir=Path(os.getenv("SOULX_WAV2VEC_DIR", str(DEFAULT_SOULX_WAV2VEC_DIR))),
-            cond_image=Path(os.getenv("SOULX_COND_IMAGE", str(DEFAULT_COND_IMAGE))),
+            soulx_root=Path(os.getenv("SOULX_ROOT", str(DEFAULT_PATHS["soulx_root"]))),
+            ckpt_dir=Path(os.getenv("SOULX_CKPT_DIR", str(DEFAULT_PATHS["ckpt_dir"]))),
+            wav2vec_dir=Path(os.getenv("SOULX_WAV2VEC_DIR", str(DEFAULT_PATHS["wav2vec_dir"]))),
+            cond_image=Path(os.getenv("SOULX_COND_IMAGE", str(DEFAULT_PATHS["cond_image"]))),
             use_face_crop=os.getenv("SOULX_USE_FACE_CROP", "0") == "1",
             base_seed=int(os.getenv("SOULX_BASE_SEED", "42")),
             public_origin=os.getenv("STREAM_PUBLIC_ORIGIN", "*"),

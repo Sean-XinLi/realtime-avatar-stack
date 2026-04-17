@@ -440,9 +440,13 @@ class SoulXRuntime:
     def _configured_avatar_paths(self) -> list[Path]:
         source = self.config.cond_image
         if source.is_dir():
-            avatar_paths = sorted(source.glob("*.png"))
+            avatar_paths = sorted(
+                path
+                for pattern in ("*.png", "*.jpg", "*.jpeg")
+                for path in source.glob(pattern)
+            )
             if not avatar_paths:
-                raise FileNotFoundError(f"no .png avatar images found in directory: {source}")
+                raise FileNotFoundError(f"no avatar images found in directory: {source}")
             return avatar_paths
         if not source.exists():
             raise FileNotFoundError(f"avatar image not found: {source}")

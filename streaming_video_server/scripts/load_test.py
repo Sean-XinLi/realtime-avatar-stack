@@ -501,7 +501,7 @@ async def run_test(args: argparse.Namespace) -> list[ClientStats]:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="WebRTC load test for the streaming video server")
-    parser.add_argument("--server-url", default="http://127.0.0.1:18000")
+    parser.add_argument("--server-url", default="http://127.0.0.1:8080")
     parser.add_argument("--clients", type=int, default=3)
     parser.add_argument("--duration", type=float, default=20.0)
     parser.add_argument("--capture-ms", type=int, default=20)

@@ -8,6 +8,9 @@
 **/node_modules/
 
 streaming_video_server/.env.server
+streaming_video_server/.env.docker
+streaming_video_server/.env.registry
+streaming_video_server/vendor/
 
 avatar_console/input.txt
 avatar_console/output.txt

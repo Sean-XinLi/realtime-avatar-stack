@@ -1,4 +1,4 @@
-# Streaming Video Project
+# realtime-avatar-stack
 
 This repository packages two related applications in one monorepo:
 
@@ -37,7 +37,7 @@ STREAM_MOCK_INFERENCE=1 python -m server.app
 
 The mock server listens on `http://127.0.0.1:8080`.
 
-If you prefer a prebuilt server image instead of local Python setup, see the Docker section in [streaming_video_server/README.md](./streaming_video_server/README.md).
+If you prefer a prebuilt server image instead of local Python setup, see [streaming_video_server/README.md](./streaming_video_server/README.md).
 
 ### 2. Start the console
 
@@ -73,6 +73,8 @@ python -m server.app
 ```
 
 More detail is in [streaming_video_server/README.md](./streaming_video_server/README.md).
+Additional server model setup notes are in [streaming_video_server/streaming-video-server-model-setup.pdf](./streaming_video_server/streaming-video-server-model-setup.pdf).
+For Docker-based server startup, use the published image flow in [streaming_video_server/README.md](./streaming_video_server/README.md).
 
 ## Requirements and Current Limits
 
@@ -84,7 +86,7 @@ More detail is in [streaming_video_server/README.md](./streaming_video_server/RE
 ## Repository Layout
 
 - `avatar_console/`: local console, TTS pipeline, Codex-driven reply mode, browser UI
-- `streaming_video_server/`: WebRTC server, inference runtime, debug client, scripts, and tests
+- `streaming_video_server/`: WebRTC server, inference runtime, Docker packaging, scripts, and tests
 
 Each subproject keeps its own detailed README:
 

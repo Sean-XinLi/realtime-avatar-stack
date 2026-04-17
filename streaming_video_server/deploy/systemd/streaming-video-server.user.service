@@ -4,9 +4,9 @@ After=default.target
 
 [Service]
 Type=simple
-WorkingDirectory=%h/streaming_video_project/streaming_video_server
-EnvironmentFile=%h/streaming_video_project/streaming_video_server/.env.server
-ExecStart=%h/streaming_video_project/streaming_video_server/scripts/run_server.sh
+WorkingDirectory=%h/realtime-avatar-stack/streaming_video_server
+EnvironmentFile=%h/realtime-avatar-stack/streaming_video_server/.env.server
+ExecStart=%h/realtime-avatar-stack/streaming_video_server/scripts/run_server.sh
 Restart=always
 RestartSec=5
 

@@ -1,0 +1,14 @@
+.DS_Store
+.env.server
+.pytest_cache/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+deploy/systemd/
+models/
+tests/
+vendor/SoulX-FlashHead/.git/
+vendor/SoulX-FlashHead/__pycache__/
+vendor/SoulX-FlashHead/models/
+

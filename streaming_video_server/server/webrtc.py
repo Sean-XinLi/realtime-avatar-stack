@@ -8,6 +8,7 @@ import time
 import uuid
 from collections import deque
 from fractions import Fraction
+from pathlib import Path
 from typing import Any
 
 import av
@@ -28,6 +29,19 @@ logger = logging.getLogger(__name__)
 _ORIGINAL_GET_HOST_ADDRESSES = aioice.ice.get_host_addresses
 DISCONNECTED_CLEANUP_GRACE_SEC = 5.0
 DEFAULT_AUDIO_FRAME_MS = 20
+
+
+def _detect_debug_client_root(repo_root: Path | None = None) -> Path | None:
+    resolved_repo_root = repo_root or Path(__file__).resolve().parents[1]
+    candidates = (
+        resolved_repo_root / "debug_client",
+        resolved_repo_root / "client",
+        resolved_repo_root / "server" / "static",
+    )
+    for candidate in candidates:
+        if candidate.is_dir():
+            return candidate
+    return None
 
 
 class AudioPlayoutBuffer:
@@ -651,6 +665,7 @@ async def make_app(config: ServerConfig) -> web.Application:
     session_manager = SessionManager(config.max_concurrent_sessions)
     stats_registry = SessionStatsRegistry()
     peer_registry = PeerRegistry()
+    debug_client_root = _detect_debug_client_root()
     logger.info(
         "server initialized host=%s port=%s mock_inference=%s model_type=%s max_concurrent_sessions=%s inference_workers=%s inference_step_ms=%s",
         config.host,
@@ -669,28 +684,30 @@ async def make_app(config: ServerConfig) -> web.Application:
     app["stats_registry"] = stats_registry
     app["peer_registry"] = peer_registry
     app["pcs"] = set()
+    app["debug_client_root"] = debug_client_root
 
-    app.add_routes(
-        [
-            web.get("/healthz", healthz),
-            web.post("/offer", offer),
-            web.options("/offer", offer),
-            web.post("/session/start", post_session_start),
-            web.options("/session/start", handle_options),
-            web.post("/session/stop", post_session_stop),
-            web.options("/session/stop", handle_options),
-            web.post("/candidate", post_candidate),
-            web.options("/candidate", handle_options),
-            web.get("/candidates", get_candidates),
-            web.get("/ws", websocket_signal),
-            web.post("/bootstrap-audio", post_bootstrap_audio),
-            web.options("/bootstrap-audio", handle_options),
-            web.get("/config", get_config),
-            web.get("/stats", get_stats),
-            web.get("/", index),
-            web.static("/debug-client", "debug_client"),
-        ]
-    )
+    routes = [
+        web.get("/healthz", healthz),
+        web.post("/offer", offer),
+        web.options("/offer", offer),
+        web.post("/session/start", post_session_start),
+        web.options("/session/start", handle_options),
+        web.post("/session/stop", post_session_stop),
+        web.options("/session/stop", handle_options),
+        web.post("/candidate", post_candidate),
+        web.options("/candidate", handle_options),
+        web.get("/candidates", get_candidates),
+        web.get("/ws", websocket_signal),
+        web.post("/bootstrap-audio", post_bootstrap_audio),
+        web.options("/bootstrap-audio", handle_options),
+        web.get("/config", get_config),
+        web.get("/stats", get_stats),
+        web.get("/", index),
+        web.get("/client/{tail:.*}", legacy_client_redirect),
+    ]
+    if debug_client_root is not None:
+        routes.append(web.static("/debug_client", str(debug_client_root)))
+    app.add_routes(routes)
 
     async def on_shutdown(application: web.Application) -> None:
         pcs = list(application["pcs"])
@@ -731,7 +748,28 @@ def with_cors(response: web.StreamResponse, origin: str) -> web.StreamResponse:
 
 
 async def index(request: web.Request) -> web.Response:
-    raise web.HTTPFound("/debug-client/index.html")
+    debug_client_root: Path | None = request.app.get("debug_client_root")
+    if debug_client_root is not None and (debug_client_root / "index.html").is_file():
+        raise web.HTTPFound("/debug_client/index.html")
+
+    config: ServerConfig = request.app["config"]
+    response = web.json_response(
+        {
+            "ok": True,
+            "service": "streaming-video-server",
+            "healthzPath": "/healthz",
+            "configPath": "/config",
+            "offerPath": "/offer",
+            "signalWebSocketPath": "/ws",
+        }
+    )
+    return with_cors(response, config.public_origin)
+
+
+async def legacy_client_redirect(request: web.Request) -> web.Response:
+    tail = request.match_info.get("tail", "")
+    location = f"/debug_client/{tail}" if tail else "/debug_client/"
+    raise web.HTTPFound(location)
 
 
 async def healthz(request: web.Request) -> web.Response:

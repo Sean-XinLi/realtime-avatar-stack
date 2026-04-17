@@ -1,0 +1,11 @@
+services:
+  streaming-video-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+  model-init:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
